@@ -1,26 +1,46 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container column">
+    <app-form
+      @add-block="addBlock"
+    ></app-form>
+    <app-view
+      :blocks="blocks"
+    ></app-view>
+  </div>
+  <div class="container">
+    <app-loader v-if="loading"></app-loader>
+    <app-comments
+      v-else
+      @load-comments="loadComments"
+      :comments="comments"
+    ></app-comments>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import AppForm from "@/components/AppForm"
+import AppView from "@/components/AppView"
+import AppComments from "@/components/AppComments";
+import AppLoader from "@/components/AppLoader";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+  data() {
+    return {
+      blocks: [],
+      comments: [],
+      loading: false
+    }
+  },
+  methods: {
+    addBlock(block){
+      this.blocks.push(block)
+    },
+    async loadComments() {
+      this.loading = true
+      const result = await fetch('https://jsonplaceholder.typicode.com/comments?_limit=10')
+      this.comments = await result.json()
+      this.loading = false
+    }
+  },
+  components: {AppForm, AppView, AppComments, AppLoader}
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
